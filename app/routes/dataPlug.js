@@ -21,15 +21,27 @@ router.post('/hat', (req, res, next) => {
   req.session.hatUrl = req.body['hat_url'];
 
   market.connectHat(req.session.hatUrl, (err) => {
-    if (err) { req.dataplug = { statusCode: '502' }; return next(); }
+    if (err) {
+      console.log('[ERROR]', err);
+      req.dataplug = { statusCode: '502' };
+      return next();
+    }
 
     hat.getAccessToken(req.session.hatUrl, (err, hatAccessToken) => {
-      if (err) { req.dataplug = { statusCode: '401' }; return next(); }
+      if (err) {
+        console.log('[ERROR]', err);
+        req.dataplug = { statusCode: '401' };
+        return next();
+      }
 
       req.session.hatAccessToken = hatAccessToken;
 
       db.countDataSources(req.session.hatUrl, (err, count) => {
-        if (err) { req.dataplug = { statusCode: '500' }; return next(); }
+        if (err) {
+          console.log('[ERROR]', err);
+          req.dataplug = { statusCode: '500' };
+          return next();
+        }
 
         if (count === 0) {
           return res.render('fbAuthoriseLanding', {

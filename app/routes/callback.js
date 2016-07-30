@@ -5,10 +5,17 @@ const errors = require('../errors');
 
 router.get('/authenticate', (req, res, next) => {
   if (req.query.error === 'access_denied') return res.render('fbCancel');
-  if (!req.query.code) { req.dataplug = { statusCode: '502' }; return next(); }
+  if (!req.query.code) {
+    req.dataplug = { statusCode: '502' };
+    return next();
+  }
 
   fb.exchangeCodeForToken(req.query.code, (err, sourceAccessToken) => {
-    if (err) { req.dataplug = { statusCode: '502' }; return next(); }
+    if (err) {
+      console.log('[ERROR]', err);
+      req.dataplug = { statusCode: '502' };
+      return next();
+    }
 
     req.session.sourceAccessToken = sourceAccessToken;
 
