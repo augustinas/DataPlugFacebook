@@ -14,6 +14,12 @@ setInterval(() => {
   console.log('[Update module] Checking database for tasks...');
 
   db.findDueJobs(onQueueJobs, (err, results) => {
+    if (err) {
+      console.log('[ERROR][Update module] The has been an error when fetching tasks:');
+      console.log(err);
+      return null;
+    }
+
     const updateTasks = results.reduce((memo, result) => {
       if (result.dataSource.dataSourceModelId && result.dataSource.hatIdMapping) {
         memo.push({ task: 'UPDATE_RECORDS', updateInfo: result, dataSource: result.dataSource });
@@ -108,7 +114,7 @@ function work(item, cb)  {
     }, 400);
 
   } else {
-    console.log('[Update module] Task description could not be parsed.');
+    console.log('[ERROR][Update module] Task description could not be parsed.');
     cb();
   }
 };
